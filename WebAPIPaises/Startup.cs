@@ -28,7 +28,12 @@ namespace WebAPIPaises
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("paisDB"));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().AddJsonOptions(ConfigureJson).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+        }
+
+        private void ConfigureJson(MvcJsonOptions obj)
+        {
+            obj.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,8 +55,22 @@ namespace WebAPIPaises
             {
                 context.Paises.AddRange(new List<Pais>()
                 {
-                    new Pais() {Nombre = "Argentina"},
-                    new Pais() {Nombre = "EEUU"},
+                    new Pais()
+                    {
+                        Nombre = "Argentina",
+                        Provincias = new List<Provincia>()
+                        {
+                            new Provincia(){Nombre = "Buenos Aires"}
+                        }
+                    },
+                    new Pais()
+                    {
+                        Nombre = "EEUU",
+                        Provincias = new List<Provincia>()
+                        {
+                            new Provincia() {Nombre = "Florida"}
+                        }
+                    },
                     new Pais() {Nombre = "Italia"}
                 });
 

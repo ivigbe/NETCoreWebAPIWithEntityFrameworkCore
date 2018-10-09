@@ -9,57 +9,57 @@ using WebAPIPaises.Models;
 
 namespace WebAPIPaises.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Pais/{PaisId}/Provincia")]
     [ApiController]
-    public class PaisController : ControllerBase
+    public class ProvinciaController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public PaisController(ApplicationDbContext context)
+        public ProvinciaController(ApplicationDbContext context)
         {
             this._context = context;
         }
 
         [HttpGet]
-        public IEnumerable<Pais> Get()
+        public IEnumerable<Provincia> Get(int PaisId)
         {
-            return _context.Paises.ToList();
+            return _context.Provincias.Where(p => p.PaisId == PaisId).ToList();
         }
 
-        [HttpGet("{id}", Name = "paisCreado")]
+        [HttpGet("{id}", Name = "provinciaCreada")]
         public IActionResult GetById(int id)
         {
-            var pais = this._context.Paises.Include(p => p.Provincias).FirstOrDefault(p => p.Id == id);
+            var provincia = this._context.Provincias.FirstOrDefault(p => p.Id == id);
 
-            if (pais == null)
+            if (provincia == null)
                 return NotFound();
 
-            return Ok(pais);
+            return Ok(provincia);
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Pais pais)
+        public IActionResult Post([FromBody] Provincia provincia)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            this._context.Paises.Add(pais);
+            this._context.Provincias.Add(provincia);
             this._context.SaveChanges();
 
-            return new CreatedAtRouteResult("paisCreado", new { id = pais.Id }, pais);
+            return new CreatedAtRouteResult("provinciaCreada", new { id = provincia.Id }, provincia);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put([FromBody] Pais pais, int id) 
+        public IActionResult Update([FromBody] Provincia provincia, int id)
         {
-            if (pais.Id != id)
+            if (provincia.Id != id)
             {
                 return BadRequest();
             }
 
-            this._context.Entry(pais).State = EntityState.Modified;
+            this._context.Entry(provincia).State = EntityState.Modified;
             this._context.SaveChanges();
 
             return Ok();
@@ -68,17 +68,17 @@ namespace WebAPIPaises.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var pais = this._context.Paises.FirstOrDefault(p => p.Id == id);
+            var provincia = this._context.Provincias.FirstOrDefault(p => p.Id == id);
 
-            if (pais == null)
+            if (provincia == null)
             {
                 return NotFound();
             }
 
-            this._context.Paises.Remove(pais);
+            this._context.Provincias.Remove(provincia);
             this._context.SaveChanges();
 
-            return Ok(pais);
+            return Ok(provincia);
         }
     }
 }
